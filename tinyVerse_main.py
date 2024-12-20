@@ -367,8 +367,8 @@ class TelegramBotAutomation:
                 howMany_StarDust = int(howMany_StarDust_text.replace('%', ''))
                 logging.info(f"Account {self.serial_number}: Current stardust level: {howMany_StarDust}%")
 
-                if howMany_StarDust >= 20:
-                    # Уровень пыли >= 20%, кликаем по claim
+                if howMany_StarDust >= 50:
+                    # Уровень пыли >= 50%, кликаем по claim
                     claim_button = self.wait_for_element(
                         By.XPATH,
                         '/html[1]/body[1]/div[2]/div[1]/div[1]/div[4]/a[2]'
