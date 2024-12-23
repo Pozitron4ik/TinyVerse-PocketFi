@@ -199,18 +199,20 @@ class TelegramBotAutomation:
                 logging.info(f"Account {self.serial_number}: Error in click_close_button (attempt {attempt + 1}): {e}")
 
     def click_what_simple_action_button(self):
-        # Список текстов, по которым нужно кликнуть поочерёдно
-        texts_in_order = ["What simple actions?", "What else is here?", "Calculate my mining speed"]
+        # Перечень шагов: каждый шаг содержит ожидаемый текст и XPath соответствующей кнопки
+        steps = [
+            ("What simple actions?", "/html/body/div[1]/div/div/div/div/div[1]/div[1]/div[3]/button[1]"),
+            ("What else is here?", "/html/body/div[1]/div/div/div/div/div[1]/div[1]/div[3]/button[2]"),
+            ("Start mining", "/html/body/div[1]/div/div/div/div/div[1]/div[1]/div[3]/button[2]")
+        ]
 
-        for expected_text in texts_in_order:
+        for expected_text, xpath in steps:
             try:
-                # Ищем кнопку каждый раз заново, предположим, что страница обновляет её текст
-                button = self.wait_for_element(
-                    By.XPATH,
-                    "/html[1]/body[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[2]/button[1]"
-                )
+                # Находим кнопку по XPath
+                button = self.wait_for_element(By.XPATH, xpath)
                 button_text = button.text.strip()
 
+                # Сравниваем текст
                 if button_text == expected_text:
                     button.click()
                     logging.info(f"Account {self.serial_number}: Clicked button with text '{button_text}'.")
@@ -220,9 +222,9 @@ class TelegramBotAutomation:
                         f"Account {self.serial_number}: Button text '{button_text}' does not match '{expected_text}', skipping click."
                     )
             except TimeoutException:
-                logging.info(f"Account {self.serial_number}: button not found due to timeout.")
+                logging.info(f"Account {self.serial_number}: Button for '{expected_text}' not found (timeout).")
             except NoSuchElementException:
-                logging.info(f"Account {self.serial_number}: button not found.")
+                logging.info(f"Account {self.serial_number}: Button for '{expected_text}' not found (NoSuchElement).")
             except Exception as e:
                 logging.info(f"Account {self.serial_number}: Error while trying to click '{expected_text}': {e}")
 
@@ -518,12 +520,11 @@ def process_accounts():
                         bot.click_link()
                         time.sleep(2)
                         bot.click_launch_button()
-                        bot.click_close_button()
                         bot.click_what_simple_action_button()
-                        bot.click_start_mining_button()
+                        bot.click_close_button()
                         bot.claim()
                         bot.daily()
-                        time.sleep(2)
+                        bot.click_close_button()
                         bot.claim()
 
                         logging.info(f"Account {accounts[i - 1]}: Processing completed successfully.")
