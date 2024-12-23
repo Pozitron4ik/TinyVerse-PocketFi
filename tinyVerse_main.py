@@ -223,7 +223,7 @@ class TelegramBotAutomation:
         logging.info(f"Account {self.serial_number}: Trying to click 'Begin' button.")
         begin_button = self.wait_for_element(
             By.XPATH,
-            "/html[1]/body[1]/div[2]/div[3]/div[2]/div[1]/div[1]/div[4]/button[1]",timeout=10
+            "/html/body/div[2]/div[3]/div[2]/div/div[1]/div[2]/div[3]/button",timeout=10
         )
 
         button_text = begin_button.text.strip()
@@ -384,13 +384,14 @@ class TelegramBotAutomation:
                         f"Account {self.serial_number}: Stardust only {howMany_StarDust}%, skipping claim and add_stars.")
                     self.sleep(3, 5)
             else:
-                if howMany_StarDust_text == "Collect stardust":
+                if howMany_StarDust_text in ["Collect stardust", "Собрать пыль"]:
                     claim_button = self.wait_for_element(
                         By.XPATH,
                         '/html[1]/body[1]/div[2]/div[1]/div[1]/div[4]/a[2]'
                     )
                     claim_button.click()
-                    logging.info(f"Account {self.serial_number}: Claimed stardust because text was 'Collect stardust'")
+                    logging.info(
+                        f"Account {self.serial_number}: Claimed stardust because text was '{howMany_StarDust_text}'")
                     self.sleep(2, 5)
 
                     stage += 1
